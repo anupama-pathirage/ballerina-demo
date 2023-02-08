@@ -1,0 +1,33 @@
+[
+    {
+        "empid": "SJ011MS",
+        "name": "SmithJones",
+        "birth": 1980,
+        "location": "NY",
+        "roles": [
+            {
+                "id": "AD",
+                "title": "admin",
+                "level": 3
+            },
+            {
+                "id": "DEV",
+                "title": "developer",
+                "level": 2
+            }
+        ]
+    },
+    {
+        "empid": "SJ012RA",
+        "name": "AnneThomas",
+        "birth": 1988,
+        "location": "TX",
+        "roles": [
+            {
+                "id": "QA",
+                "title": "Quality Analyst",
+                "level": 1
+            }
+        ]
+    }
+]
