@@ -1,9 +1,9 @@
 import ballerina/xmldata;
 import ballerinax/azure_storage_service.blobs;
 
-
 configurable string accessKey = ?;
 configurable string account = ?;
+configurable string container = ?;
 
 type Address record {
     string streetaddress;
@@ -50,27 +50,27 @@ public function main() returns error? {
     blobs:BlobClient blobClient = check new (blobConnectionConfig);
 
     //Get the json fiile from the blob storage
-    blobs:BlobResult blob = check blobClient->getBlob("employees", "EmployeeData.json");
+    blobs:BlobResult blob = check blobClient->getBlob(container, "EmployeeData.json");
     string jsonStr = check string:fromBytes(blob.blobContent);
     json inputData = check jsonStr.fromJsonString();
 
-    //Transform the json data to different json format
+    //Transform the json data to different json format and write to a file
     Employee[] inputEmployee = checkpanic inputData.cloneWithType();
     OutputEmployee[] outputData = transform(inputEmployee);
+    _ = check blobClient->putBlob(container, "EmployeeDataV321.json", "BlockBlob", outputData.toString().toBytes());
 
     //Convert the json data to xml and write the xml file back to the blob storage
     xml? xmlData = check xmldata:fromJson(outputData.toJson()); //Why nil is returned here?
-    if xmlData is xml {
-        _ = check blobClient->putBlob("employees", "EmployeeDataV2.xml", "BlockBlob", xmlData.toString().toBytes());
-    }
+    _ = check blobClient->putBlob(container, "EmployeeDataV321.xml", "BlockBlob", xmlData.toString().toBytes());
+
 }
 
-function transform(Employee[] inputEmployeeItem) returns OutputEmployee[] => 
+function transform(Employee[] inputEmployeeItem) returns OutputEmployee[] =>
     from var inputEmployeeItemItem in inputEmployeeItem
-    select {
-        empid: inputEmployeeItemItem.empid,
-        name: inputEmployeeItemItem.personal.firstname + inputEmployeeItemItem.personal.lastname,
-        birth: inputEmployeeItemItem.personal.birthyear,
-        location: inputEmployeeItemItem.personal.address.state,
-        roles: inputEmployeeItemItem.roles
-    };
+select {
+    empid: inputEmployeeItemItem.empid,
+    name: inputEmployeeItemItem.personal.firstname + " " + inputEmployeeItemItem.personal.lastname,
+    birth: inputEmployeeItemItem.personal.birthyear,
+    location: inputEmployeeItemItem.personal.address.state,
+    roles: inputEmployeeItemItem.roles
+};
