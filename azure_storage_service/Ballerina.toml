@@ -1,6 +1,6 @@
 [package]
 org = "anupama"
-name = "file_data_service"
+name = "azure_storage_service"
 version = "0.1.0"
 distribution = "2201.3.1"
 

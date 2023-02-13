@@ -8,9 +8,10 @@ dependencies-toml-version = "2"
 
 [[package]]
 org = "anupama"
-name = "file_processor"
+name = "azure_storage_service"
 version = "0.1.0"
 dependencies = [
+	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "test"},
 	{org = "ballerina", name = "xmldata"},
@@ -18,7 +19,7 @@ dependencies = [
 	{org = "ballerinax", name = "azure_storage_service"}
 ]
 modules = [
-	{org = "anupama", packageName = "file_processor", moduleName = "file_processor"}
+	{org = "anupama", packageName = "azure_storage_service", moduleName = "azure_storage_service"}
 ]
 
 [[package]]
@@ -101,6 +102,9 @@ dependencies = [
 	{org = "ballerina", name = "regex"},
 	{org = "ballerina", name = "time"},
 	{org = "ballerina", name = "url"}
+]
+modules = [
+	{org = "ballerina", packageName = "http", moduleName = "http"}
 ]
 
 [[package]]
