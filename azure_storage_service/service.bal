@@ -48,31 +48,28 @@ service /portal on new http:Listener(9090) {
         return blobClient->putBlob(container, file, "BlockBlob", employees.toJsonString().toBytes());
     }
 
-    resource function get employees(@http:Header string accept, string file) returns json|xml|http:NotAcceptable|error {
+    resource function get employees(string file) returns json|error {
         blobs:BlobClient blobClient = check createStorageClient();
         blobs:BlobResult result = check blobClient->getBlob(container, file);
         string jsonData = check string:fromBytes(result.blobContent);
-        match accept {
-            "application/json" => {
-                return jsonData.fromJsonString();
-            }
-            "application/xml" => {
-                return check xmldata:fromJson(check jsonData.fromJsonString());
-            }
-            _ => {
-                return http:NOT_ACCEPTABLE;
-            }
-        }
+        return jsonData.fromJsonString();
     }
 
-    resource function get convert(string file) returns OutputEmployee[]|error {
+    resource function post employees\-xml(string jsonfile, string xmlfile) returns json|error {
+        blobs:BlobClient blobClient = check createStorageClient();
+        blobs:BlobResult result = check blobClient->getBlob(container, jsonfile);
+        string jsonData = check string:fromBytes(result.blobContent);
+        xml? xmlData = check xmldata:fromJson(check jsonData.fromJsonString());
+        return check blobClient->putBlob(container, xmlfile, "BlockBlob", xmlData.toString().toBytes());
+    }
+
+    resource function get employees\-reduced(string file) returns OutputEmployee[]|error {
         blobs:BlobClient blobClient = check createStorageClient();
         blobs:BlobResult result = check blobClient->getBlob(container, file);
-        string jsonData = check string:fromBytes(result.blobContent);
-        json jsonVal = check jsonData.fromJsonString();
+        string jsonStr = check string:fromBytes(result.blobContent);
+        json jsonVal = check jsonStr.fromJsonString();
         Employee[] inputEmployee = checkpanic jsonVal.cloneWithType();
-        OutputEmployee[] outputData = transform(inputEmployee);
-        return outputData;
+        return transform(inputEmployee);
     }
 }
 
