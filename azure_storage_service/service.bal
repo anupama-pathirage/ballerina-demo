@@ -51,15 +51,15 @@ service /portal on new http:Listener(9090) {
     resource function get employees(string file) returns json|error {
         blobs:BlobClient blobClient = check createStorageClient();
         blobs:BlobResult result = check blobClient->getBlob(container, file);
-        string jsonData = check string:fromBytes(result.blobContent);
-        return jsonData.fromJsonString();
+        string jsonStr = check string:fromBytes(result.blobContent);
+        return jsonStr.fromJsonString();
     }
 
     resource function post employees\-xml(string jsonfile, string xmlfile) returns json|error {
         blobs:BlobClient blobClient = check createStorageClient();
         blobs:BlobResult result = check blobClient->getBlob(container, jsonfile);
-        string jsonData = check string:fromBytes(result.blobContent);
-        xml? xmlData = check xmldata:fromJson(check jsonData.fromJsonString());
+        string jsonStr = check string:fromBytes(result.blobContent);
+        xml? xmlData = check xmldata:fromJson(check jsonStr.fromJsonString());
         return check blobClient->putBlob(container, xmlfile, "BlockBlob", xmlData.toString().toBytes());
     }
 
@@ -67,8 +67,8 @@ service /portal on new http:Listener(9090) {
         blobs:BlobClient blobClient = check createStorageClient();
         blobs:BlobResult result = check blobClient->getBlob(container, file);
         string jsonStr = check string:fromBytes(result.blobContent);
-        json jsonVal = check jsonStr.fromJsonString();
-        Employee[] inputEmployee = checkpanic jsonVal.cloneWithType();
+        json jsonData = check jsonStr.fromJsonString();
+        Employee[] inputEmployee = checkpanic jsonData.cloneWithType();
         return transform(inputEmployee);
     }
 }
